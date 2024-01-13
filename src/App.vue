@@ -1,32 +1,87 @@
 <script setup>
-import { ref, nextTick } from "vue";
+import {
+  ref,
+  nextTick,
+  onMounted,
+
+} from "vue";
 import { jsPDF } from "jspdf";
 
 const body = ref(null);
 
+const getInputsText = () => {
+  const inputsTexts = document.querySelectorAll('input[type="text"]');
+  for (let index = 0; index < inputsTexts.length; index++) {
+    const element = inputsTexts[index];
+    element.id = `InputText_${index}`;
+    element.addEventListener('input', function (e) {
+      element.setAttribute('value', e.target.value)
+    })
+  }
+}
+const getInputsRadio = () => {
+  const inputsTexts = document.querySelectorAll('input[type="radio"]');
+  for (let index = 0; index < inputsTexts.length; index++) {
+    const element = inputsTexts[index];
+    element.id = `InputRadio_${index}`;
+    element.addEventListener('input', function () {
+      element.setAttribute('checked', '')
+    })
+  }
+}
+
+const getInputsSelect = () => {
+  const inputsTexts = document.querySelectorAll('select');
+  for (let index = 0; index < inputsTexts.length; index++) {
+    const element = inputsTexts[index];
+    element.id = `InputSelect_${index}`;
+    element.addEventListener('change', function (e) {
+      for (var i = 0; i < element.options.length; i++) {
+        element.options[i].removeAttribute("selected");
+      }
+
+      // Seleccionar la opción deseada
+      for (var s = 0; s < element.options.length; s++) {
+        if (element.options[s].value === e.target.value) {
+          element.options[s].setAttribute("selected", "selected");
+          break;
+        }
+      }
+    })
+  }
+}
+
+
 
 const submit = async () => {
-  
+
   await nextTick();
   const doc = new jsPDF();
   const contentHtml = await body.value.innerHTML;
   await doc.html(`${contentHtml}`, { x: 8, y: 15, html2canvas: { scale: 0.3, width: 100 }, });
   doc.save("sample.pdf", { format: 'legal' });
-
-
 }
+
+onMounted(() => {
+  getInputsText()
+  getInputsRadio()
+  getInputsSelect()
+})
 
 
 </script>
 <template>
   <body id="form">
     <div ref="body" id="body">
+
       <fieldset id="fieldset_1" style="
             background-color: #6dc5ed;
             border-radius: 10px;
             border: solid #89b6d0;
             color: #1e2692;
             width: 40rem;
+            
+            
             
           ">
         <legend class="titles-sections-1" style="
@@ -38,10 +93,13 @@ const submit = async () => {
         </legend>
         <div>
           <label class="subtitles" for="customerName">Customer Name:</label>
-          <input type="text" id="customerName" name="customerName" value="12312312"   style="
+          <input type="text" id="customerName" name="customerName" style="
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+                
               " />
         </div>
         <div>
@@ -50,12 +108,14 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
         </div>
         <div style="display: flex; justify-content: space-around">
           <div>
             <label class="subtitles" for="cat1">Category of Water:</label>
-            <input  type="radio" id="cat1" name="category-1" value="1" />
+            <input type="radio" id="cat1" name="category-1" value="1" />
           </div>
           <div>
             <label for="cat1">1</label>
@@ -79,6 +139,8 @@ const submit = async () => {
             color: #1e2692;
             width: 40rem;
             
+            
+            
           ">
         <legend class="titles-sections" style="
               color: black;
@@ -100,9 +162,11 @@ const submit = async () => {
               <div style="justify-self: center">Room Length</div>
               <div>(L):</div>
             </label>
-            <input type="text" id="roomLength"  ref="roomLength" name="roomLength" style="
+            <input type="text" id="roomLength" ref="roomLength" name="roomLength" style="
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
           </div>
 
@@ -115,6 +179,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
           </div>
 
@@ -127,6 +193,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
           </div>
           <div>
@@ -135,6 +203,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 ">
               <option value=" C">C = CarpetT-V = Vinyl tile</option>
               <option value="V">V = VinylT = Ceramic tile</option>
@@ -152,70 +222,7 @@ const submit = async () => {
             color: #1e2692;
             width: 40rem;
             
-          ">
-        <legend class="titles-sections" style="
-              color: black;
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 24px;
-            ">
-          Room Dimensions Offset
-        </legend>
-        <div style="color: white">
-          <div>
-            <label class="subtitles-room" for="roomLength" style="display: flex; justify-content: space-between">
-              <div>Room Length</div>
-              <div>(L):</div>
-            </label>
-            <input type="text" id="roomLength" name="roomLength" style="
-                  background: white;
-                  border-radius: 10px;
-                  border: solid #cdcdcd 2px;
-                " />
-          </div>
-          <div>
-            <label class="subtitles-room" for="roomWidth" style="display: flex; justify-content: space-between">
-              <div>Room Width</div>
-              <div>(W):</div>
-            </label>
-            <input type="text" id="roomWidth" name="roomWidth" style="
-                  background: white;
-                  border-radius: 10px;
-                  border: solid #cdcdcd 2px;
-                " />
-          </div>
-          <div>
-            <label class="subtitles-room" for="roomHeight" style="display: flex; justify-content: space-between">
-              <div>Room Height</div>
-              <div>(H):</div>
-            </label>
-            <input type="text" id="roomHeight" name="roomHeight" style="
-                  background: white;
-                  border-radius: 10px;
-                  border: solid #cdcdcd 2px;
-                " />
-          </div>
-          <div>
-            <label class="subtitles-room" for="floorType">Floor Type:</label>
-            <select id="floorType" name="floorType" style="
-                  background: white;
-                  border-radius: 10px;
-                  border: solid #cdcdcd 2px;
-                ">
-              <option value="C">C = CarpetT-V = Vinyl tile</option>
-              <option value="V">V = VinylT = Ceramic tile</option>
-              <option value="L">L = LaminateW = Wood</option>
-              <option value="W">Co = Concrete</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset id="fieldset_4" style="
-            background-color: #e76969;
-            border-radius: 10px;
-            border: solid #89b6d0;
-            color: #1e2692;
-            width: 40rem;
+            
             
           ">
         <legend class="titles-sections" style="
@@ -235,6 +242,83 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
+                " />
+          </div>
+          <div>
+            <label class="subtitles-room" for="roomWidth" style="display: flex; justify-content: space-between">
+              <div>Room Width</div>
+              <div>(W):</div>
+            </label>
+            <input type="text" id="roomWidth" name="roomWidth" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
+                " />
+          </div>
+          <div>
+            <label class="subtitles-room" for="roomHeight" style="display: flex; justify-content: space-between">
+              <div>Room Height</div>
+              <div>(H):</div>
+            </label>
+            <input type="text" id="roomHeight" name="roomHeight" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
+                " />
+          </div>
+          <div>
+            <label class="subtitles-room" for="floorType">Floor Type:</label>
+            <select id="floorType" name="floorType" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
+                ">
+              <option value="C">C = CarpetT-V = Vinyl tile</option>
+              <option value="V">V = VinylT = Ceramic tile</option>
+              <option value="L">L = LaminateW = Wood</option>
+              <option value="W">Co = Concrete</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset id="fieldset_4" style="
+            background-color: #e76969;
+            border-radius: 10px;
+            border: solid #89b6d0;
+            color: #1e2692;
+            width: 40rem;
+            
+            
+            
+          ">
+        <legend class="titles-sections" style="
+              color: black;
+              font-family: Arial, Helvetica, sans-serif;
+              font-size: 24px;
+            ">
+          Room Dimensions Offset
+        </legend>
+        <div style="color: white">
+          <div>
+            <label class="subtitles-room" for="roomLength" style="display: flex; justify-content: space-between">
+              <div>Room Length</div>
+              <div>(L):</div>
+            </label>
+            <input type="text" id="roomLength" name="roomLength" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
           </div>
 
@@ -247,6 +331,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
           </div>
 
@@ -259,6 +345,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
           </div>
 
@@ -268,6 +356,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 ">
               <option value="C">C = CarpetT-V = Vinyl tile</option>
               <option value="V">V = VinylT = Ceramic tile</option>
@@ -284,6 +374,8 @@ const submit = async () => {
             border: solid #89b6d0;
             color: #1e2692;
             width: 40rem;
+            
+            
             
           ">
         <legend class="titles-sections-equipment" style="
@@ -322,6 +414,8 @@ const submit = async () => {
             border: solid #89b6d0;
             color: balck;
             width: 40rem;
+            
+            
             
           ">
         <div class="form-line" style="display: flex; justify-content: space-around">
@@ -374,6 +468,8 @@ const submit = async () => {
             border: solid #89b6d0;
             color: balck;
             width: 40rem;
+            
+            
             
           ">
         <div class="form-line" style="
@@ -464,6 +560,8 @@ const submit = async () => {
             color: balck;
             width: 40rem;
             
+            
+            
           ">
         <div class="form-line" style="display: flex; justify-content: space-between; gap: 10px">
           <label class="equipamientos-titulos" for="dehumidifierSize">Other</label>
@@ -471,6 +569,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 5px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
         </div>
         <div class="form-line" style="color: #cecece; font-size: 14px">
@@ -482,12 +582,16 @@ const submit = async () => {
                 background: white;
                 border-radius: 5px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
           <span>x</span>
           <input type="text" id="dehumidifierDays" name="dehumidifierDays" placeholder="(_____Days)" style="
                 background: white;
                 border-radius: 5px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
         </div>
       </fieldset>
@@ -499,6 +603,8 @@ const submit = async () => {
             color: balck;
             width: 40rem;
             
+            
+            
           ">
         <div class="form-line" style="display: flex; justify-content: space-between">
           <label class="equipamientos-titulos" for="airMover">TES/TEX:</label>
@@ -507,6 +613,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 5px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
             <label for="cat1" style="color: #cecece">50 BTU</label>
           </div>
@@ -515,6 +623,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 5px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
             <label for="cat2" style="color: #cecece">80 BTU</label>
           </div>
@@ -552,6 +662,8 @@ const submit = async () => {
             padding: 100px 0px;
             width: 40rem;
             
+            
+            
           ">
         <div class="notas">
           <h1 class="note">NOTE: A/H:AfterHrs - R/H: Regular Hrs</h1>
@@ -566,6 +678,8 @@ const submit = async () => {
             color: balck;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="build-containment" style="
               color: black;
@@ -576,6 +690,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -585,6 +701,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
         </div>
       </fieldset>
@@ -596,6 +714,8 @@ const submit = async () => {
             color: balck;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zip-poles" style="
               color: black;
@@ -606,6 +726,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -615,12 +737,16 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
           <span>x</span>
           <input type="text" id="airMoverDays" name="airMoverDays" placeholder="Days" style="
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
         </div>
       </fieldset>
@@ -632,6 +758,8 @@ const submit = async () => {
             color: balck;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers" style="
               color: black;
@@ -642,6 +770,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -651,6 +781,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
         </div>
       </fieldset>
@@ -661,6 +793,8 @@ const submit = async () => {
             border: solid #89b6d0;
             color: balck;
             width: 40rem;
+            
+            
             
           ">
         <h1 class="titulos-footer">Content Manipulation</h1>
@@ -701,6 +835,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               ">
             <option value="A/H">A/H</option>
             <option value="R/H">R/H</option>
@@ -715,6 +851,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <div class="form-line" style="
@@ -744,6 +882,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -758,6 +898,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="content-manipulation" style="margin: 30px 0px">Contents per hour:
           HR(S)</label>
@@ -765,6 +907,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -779,6 +923,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <div class="form-line" style="
               display: flex;
@@ -791,6 +937,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               ">
             <option value="A/H">A/H</option>
             <option value="R/H">R/H</option>
@@ -820,12 +968,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Protect (w/6mil plastic):</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -841,6 +993,8 @@ const submit = async () => {
             border: solid #89b6d0;
             color: balck;
             width: 40rem;
+            
+            
             
           ">
         <h1 class="titulos-footer">Appliances</h1>
@@ -862,6 +1016,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 ">
               <option value="A/H">A/H</option>
               <option value="R/H">R/H</option>
@@ -888,6 +1044,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <div class="form-line" style="display: flex; flex-direction: column">
           <label class="equipamientos-titulos" for="airMover"
@@ -896,6 +1054,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               ">
             <option value="A/H">A/H</option>
             <option value="R/H">R/H</option>
@@ -920,6 +1080,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <div class="form-line" style="display: flex; justify-content: flex-start">
@@ -950,6 +1112,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -963,6 +1127,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <div class="form-line" style="display: flex; justify-content: space-around">
@@ -981,6 +1147,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -994,6 +1162,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <div class="form-line" style="display: flex; justify-content: space-around">
@@ -1011,6 +1181,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1024,6 +1196,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <div class="form-line" style="display: flex; justify-content: space-around">
@@ -1042,6 +1216,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1055,6 +1231,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <h1 class="titulos-footer">PumpingWater</h1>
@@ -1074,6 +1252,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               ">
             <option value="A/H">A/H</option>
             <option value="R/H">R/H</option>
@@ -1088,6 +1268,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <h1 class="titulos-footer">WaterExtraction</h1>
@@ -1124,6 +1306,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               ">
             <option value="A/H">A/H</option>
             <option value="R/H">R/H</option>
@@ -1140,6 +1324,8 @@ const submit = async () => {
             width: 40rem;
             
             
+            
+            
           ">
         <div class="form-line">
           <label class="equipamientos-titulos" for="airMover">Hardfloor
@@ -1152,6 +1338,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1166,6 +1354,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <div class="form-line">
           <label class="equipamientos-titulos" for="airMover">
@@ -1177,6 +1367,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
         </div>
         <select id="content-manipulation" name="content-manipulation">
@@ -1193,6 +1385,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <div class="form-line">
           <label class="equipamientos-titulos" for="airMover">Drill hols
@@ -1205,6 +1399,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1218,6 +1414,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <h1 class="titulos-footer">DetachOnly / Detach&Reset</h1>
@@ -1233,6 +1431,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               ">
             <option value="A/H">A/H</option>
             <option value="R/H">R/H</option>
@@ -1261,6 +1461,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">DblDoor (checkone)
         </label>
@@ -1268,6 +1470,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1295,6 +1499,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Bifold (checkone)
         </label>
@@ -1302,6 +1508,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1329,6 +1537,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Doublebifold
         </label>
@@ -1336,6 +1546,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1362,6 +1574,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <label class="equipamientos-titulos" for="zippers">Sinkfaucet (checkone)
@@ -1393,12 +1607,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Sink (checkone)</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1425,6 +1643,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <label class="equipamientos-titulos" for="zippers">Dblsink (checkone)</label>
@@ -1455,12 +1675,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Laminatecountertop</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1478,12 +1702,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Solid/Granite countertop</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1501,12 +1729,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Uppercabinets</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1524,12 +1756,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Lowercabinets</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1547,12 +1783,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Full heightcabinets</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1570,12 +1810,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Marblevanity top</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1593,12 +1837,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Vanity</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1616,12 +1864,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Toiler (checkone)</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1641,12 +1893,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Detach&realycarpet</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1664,12 +1920,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Lift/floatcarpet</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1687,6 +1947,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <h1 class="titulos-footer">TearOut/Remove Material</h1>
         <fieldset id="fieldset_53" style="
@@ -1701,6 +1963,8 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               ">
             <option value="A/H">A/H</option>
             <option value="R/H">R/H</option>
@@ -1719,6 +1983,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <div style="display: flex; justify-content: space-around">
           <label class="equipamientos-titulos-2" for="zippers">Casing:</label>
@@ -1735,6 +2001,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1751,6 +2019,8 @@ const submit = async () => {
             color: balck;
             padding: 50px 10px;
             width: 40rem;
+            
+            
             
           ">
         <div style="display: flex; justify-content: space-around">
@@ -1769,6 +2039,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1786,12 +2058,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Paneling</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1809,6 +2085,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Drywall – up to 2 tall
         </label>
@@ -1816,6 +2094,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1833,6 +2113,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Drywall – up to 4 tall
         </label>
@@ -1840,6 +2122,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1857,12 +2141,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Drywall</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1880,12 +2168,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Plasterwithdrywall</label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1903,6 +2195,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Plasteroverlath
         </label>
@@ -1910,6 +2204,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1927,12 +2223,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Insulation </label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1950,12 +2250,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Carpet </label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1973,6 +2277,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Glued-downcarpet
         </label>
@@ -1980,6 +2286,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -1997,12 +2305,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">CarpedPad </label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2020,12 +2332,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">TackStrip </label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2043,12 +2359,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Vinyl </label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2066,6 +2386,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Vinyl composite tile
         </label>
@@ -2073,6 +2395,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2090,6 +2414,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Ceramicfloor tile
         </label>
@@ -2097,6 +2423,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2114,12 +2442,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Laminate </label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2137,12 +2469,16 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Hardwood </label>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2164,6 +2500,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">1/4" Underlayment
         </label>
@@ -2171,6 +2509,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2188,6 +2528,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">3/4” Subfloor
         </label>
@@ -2195,6 +2537,8 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2212,6 +2556,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <h1 class="titulos-footer">Anti-Microbial</h1>
         <fieldset id="fieldset_75" style="
@@ -2227,6 +2573,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
           </div>
           <label class="equipamientos-titulos" for="zippers">Wall </label>
@@ -2235,6 +2583,8 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
           </div>
           <label class="equipamientos-titulos" for="zippers">Floor </label>
@@ -2243,12 +2593,16 @@ const submit = async () => {
                   background: white;
                   border-radius: 10px;
                   border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
                 " />
           </div>
           <select id="content-manipulation" name="content-manipulation" style="
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               ">
             <option value="A/H">A/H</option>
             <option value="R/H">R/H</option>
@@ -2274,6 +2628,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <h1 class="titulos-footer">RemediationCleaning</h1>
         <fieldset id="fieldset_77" style="
@@ -2289,11 +2645,15 @@ const submit = async () => {
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               " />
           <select id="content-manipulation" name="content-manipulation" style="
                 background: white;
                 border-radius: 10px;
                 border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
               ">
             <option value="A/H">A/H</option>
             <option value="R/H">R/H</option>
@@ -2309,6 +2669,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Clean Wall tile
         </label>
@@ -2316,11 +2678,15 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             " />
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2335,6 +2701,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Cleanfloor tile
         </label>
@@ -2342,11 +2710,15 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             " />
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2361,6 +2733,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Cleancarpet
         </label>
@@ -2368,11 +2742,15 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             " />
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2387,6 +2765,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">Cleanfloor(subflr/other)
         </label>
@@ -2394,11 +2774,15 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             " />
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
@@ -2413,6 +2797,8 @@ const submit = async () => {
             padding: 50px 10px;
             width: 40rem;
             
+            
+            
           ">
         <label class="equipamientos-titulos" for="zippers">HEPA Vacuum
         </label>
@@ -2420,20 +2806,26 @@ const submit = async () => {
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             " />
         <p class="equipamientos-titulos">Or</p>
         <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________HRS)" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             " />
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
               border-radius: 10px;
               border: solid #cdcdcd 2px;
+              letter-spacing: 0px;
+              height: 35px;
             ">
           <option value="A/H">A/H</option>
-          <option value="R/H">R/H</option>
+          <option value="R/H" selected>R/H</option>
         </select>
       </fieldset>
 
