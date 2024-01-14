@@ -6,6 +6,8 @@ import {
 
 } from "vue";
 import { jsPDF } from "jspdf";
+import axios from 'axios'
+
 
 const body = ref(null);
 
@@ -54,12 +56,40 @@ const getInputsSelect = () => {
 
 
 const submit = async () => {
-
   await nextTick();
   const doc = new jsPDF();
   const contentHtml = await body.value.innerHTML;
-  await doc.html(`${contentHtml}`, { x: 8, y: 15, html2canvas: { scale: 0.3, width: 100 }, });
-  doc.save("sample.pdf", { format: 'legal' });
+  await doc.html(`${contentHtml}`, { x: 8, y: 15, html2canvas: { scale: 0.3, width: 100 } });
+
+  // Verificar que blob contiene el PDF
+  const blob = doc.output('blob');
+  console.log('Blob:', blob);
+
+  const formData = new FormData();
+  formData.append('archivo', blob, `${new Date()}.pdf`);
+
+  // Configurar las opciones para la solicitud axios
+  const axiosConfig = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Accept': 'application/json',
+    },
+  };
+
+  // Verificar que la URL sea correcta
+  const url = 'https://formulario.test/send_mail.php';
+  console.log('URL:', url);
+
+  // Realizar la solicitud POST con axios
+  axios.post(url, formData, axiosConfig)
+    .then(response => {
+      // Manejar la respuesta del servidor
+      console.log('Solicitud exitosa. Respuesta:', response.data);
+    })
+    .catch(error => {
+      // Manejar errores de la solicitud
+      console.error('Error en la solicitud:', error.message);
+    });
 }
 
 onMounted(() => {
@@ -393,7 +423,12 @@ onMounted(() => {
             ">
           <div class="form-line" style="font-size: 12px">
             <label class="equipamientos-titulos" for="dehumidifierSize">Dehumidifier Mode/Size:</label>
-            <input type="text" id="dehumidifierSize" name="dehumidifierSize" placeholder="" />
+            <input type="text" id="dehumidifierSize" name="dehumidifierSize" placeholder="" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
           </div>
 
           <div class="form-line" style="color: #cecece; font-size: 10px; margin: 40px auto">
@@ -401,9 +436,21 @@ onMounted(() => {
               (____/______EA)__x____(________Days)</label>
           </div>
           <div class="form-line">
-            <input type="text" id="dehumidifierEA" name="dehumidifierEA" placeholder="(____/______EA)__" />
+            <input type="text" id="dehumidifierEA" name="dehumidifierEA" placeholder="(____/______EA)__" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
             <span>x</span>
-            <input type="text" id="dehumidifierDays" name="dehumidifierDays" placeholder="___(________Days)" />
+            <input type="text" id="dehumidifierDays" name="dehumidifierDays" placeholder="___(________Days)" 
+            style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;"
+            />
           </div>
         </fieldset>
       </fieldset>
@@ -447,7 +494,12 @@ onMounted(() => {
 
         <div class="form-line" style="margin: 30px auto">
           <label class="equipamientos-titulos" for="dehumidifierSize">Other</label>
-          <input type="text" id="dehumidifierSize" name="dehumidifierSize" />
+          <input type="text" id="dehumidifierSize" name="dehumidifierSize" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;"/>
         </div>
 
         <div class="form-line" style="font-size: 12px; color: #cecece; margin: 30px auto">
@@ -456,9 +508,19 @@ onMounted(() => {
         </div>
 
         <div class="form-line" style="display: flex">
-          <input type="text" id="dehumidifierEA" name="dehumidifierEA" placeholder="(____EA)" />
+          <input type="text" id="dehumidifierEA" name="dehumidifierEA" placeholder="(____EA)" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
           <span>x</span>
-          <input type="text" id="dehumidifierDays" name="dehumidifierDays" placeholder="(_____Days)" />
+          <input type="text" id="dehumidifierDays" name="dehumidifierDays" placeholder="(_____Days)" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
         </div>
       </fieldset>
 
@@ -497,9 +559,19 @@ onMounted(() => {
               justify-content: space-around;
               margin: 30px auto;
             ">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________EA)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________EA)" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
           <span>x</span>
-          <input type="text" id="airMoverDays" name="airMoverDays" placeholder="(_______________Days)" />
+          <input type="text" id="airMoverDays" name="airMoverDays" placeholder="(_______________Days)" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
         </div>
         <div class="form-line" style="
               display: flex;
@@ -510,9 +582,21 @@ onMounted(() => {
             <label class="equipamientos-titulos" for="eTES">E-TES (Electric):</label>
           </div>
           <div style="width: 70%; display: flex; justify-content: space-around">
-            <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________EA)" />
+            <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________EA)" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
             <span>x</span>
-            <input type="text" id="airMoverDays" name="airMoverDays" placeholder="(_______________Days)" />
+            <input type="text" id="airMoverDays" name="airMoverDays" placeholder="(_______________Days)" 
+            style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;"
+            />
           </div>
         </div>
         <hr />
@@ -539,9 +623,19 @@ onMounted(() => {
           </div>
         </div>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________EA)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________EA)" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
           <span>x</span>
-          <input type="text" id="airMoverDays" name="airMoverDays" placeholder="(_______________Days)" />
+          <input type="text" id="airMoverDays" name="airMoverDays" placeholder="(_______________Days)" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
         </div>
         <div class="form-line">
           <label class="equipamientos-titulos">ReplacedsInternalFilter</label>
@@ -631,9 +725,19 @@ onMounted(() => {
         </div>
 
         <div class="form-line" style="display: flex; justify-content: space-between; gap: 10px">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________EA)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________EA)" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
           <span>x</span>
-          <input type="text" id="airMoverDays" name="airMoverDays" placeholder="(_______________Days)" />
+          <input type="text" id="airMoverDays" name="airMoverDays" placeholder="(_______________Days)" style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;" />
         </div>
 
         <hr />
@@ -983,7 +1087,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______SF)" 
+          style="
+                  background: white;
+                  border-radius: 10px;
+                  border: solid #cdcdcd 2px;
+                  letter-spacing: 0px;
+                  height: 35px;
+                "/>
         </div>
       </fieldset>
 
@@ -1300,7 +1411,14 @@ onMounted(() => {
           </div>
 
           <div class="form-line">
-            <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______SF)" />
+            <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______SF)"
+            style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
           </div>
           <select id="content-manipulation" name="content-manipulation" style="
                 background: white;
@@ -1332,7 +1450,13 @@ onMounted(() => {
           </label>
         </div>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______SF)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              "  />
         </div>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
@@ -1393,7 +1517,13 @@ onMounted(() => {
           </label>
         </div>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(_________EA)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(_________EA)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              "  />
         </div>
         <select id="content-manipulation" name="content-manipulation" style="
               background: white;
@@ -1438,7 +1568,13 @@ onMounted(() => {
             <option value="R/H">R/H</option>
           </select>
           <div class="form-line">
-            <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" />
+            <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
           </div>
           <div style="display: flex; justify-content: center">
             <div>
@@ -1477,7 +1613,13 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
         <div style="display: flex; justify-content: center">
           <div>
@@ -1515,7 +1657,13 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
         <div style="display: flex; justify-content: center">
           <div>
@@ -1553,7 +1701,13 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
         <div style="display: flex; justify-content: center">
           <div>
@@ -1580,12 +1734,23 @@ onMounted(() => {
           ">
         <label class="equipamientos-titulos" for="zippers">Sinkfaucet (checkone)
         </label>
-        <select id="content-manipulation" name="content-manipulation">
+        <select id="content-manipulation" name="content-manipulation" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
         <div style="display: flex; justify-content: center">
           <div>
@@ -1622,7 +1787,13 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
         <div style="display: flex; justify-content: center">
           <div>
@@ -1648,12 +1819,25 @@ onMounted(() => {
             
           ">
         <label class="equipamientos-titulos" for="zippers">Dblsink (checkone)</label>
-        <select id="content-manipulation" name="content-manipulation">
+        <select id="content-manipulation" name="content-manipulation" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              ">
           <option value="A/H">A/H</option>
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(#______)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
         <div style="display: flex; justify-content: center">
           <div>
@@ -1690,7 +1874,13 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -1717,7 +1907,13 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -1744,7 +1940,13 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              "/>
         </div>
       </fieldset>
 
@@ -1771,7 +1973,13 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -1798,7 +2006,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -1825,7 +2040,15 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              "
+          />
         </div>
       </fieldset>
 
@@ -1852,7 +2075,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -1908,7 +2138,15 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(______LF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              "
+          />
         </div>
       </fieldset>
 
@@ -1935,7 +2173,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -1970,7 +2215,14 @@ onMounted(() => {
             <option value="R/H">R/H</option>
           </select>
           <div class="form-line">
-            <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)" />
+            <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)"
+            style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
           </div>
         </fieldset>
       </fieldset>
@@ -2008,7 +2260,15 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              "
+          />
         </div>
       </fieldset>
 
@@ -2073,7 +2333,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2101,7 +2368,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2129,7 +2403,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________LF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2156,7 +2437,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2183,7 +2471,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2211,7 +2506,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2238,7 +2540,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2293,7 +2602,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2320,7 +2636,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              "/>
         </div>
       </fieldset>
 
@@ -2347,7 +2670,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2374,7 +2704,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2402,7 +2739,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2430,7 +2774,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2457,7 +2808,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2484,7 +2842,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
         <input type="radio" id="cat1" name="category-25" value="1" />
         <label for="cat1">Over Wood Subfloor</label>
@@ -2516,7 +2881,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
@@ -2544,7 +2916,14 @@ onMounted(() => {
           <option value="R/H">R/H</option>
         </select>
         <div class="form-line">
-          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)" />
+          <input type="text" id="airMoverEA" name="airMoverEA" placeholder="(________SF)"
+          style="
+                background: white;
+                border-radius: 10px;
+                border: solid #cdcdcd 2px;
+                letter-spacing: 0px;
+                height: 35px;
+              " />
         </div>
       </fieldset>
 
